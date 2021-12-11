@@ -22,10 +22,11 @@ pub fn killsnoop(ctx: TracePointContext) -> u32 {
 }
 
 unsafe fn try_killsnoop(ctx: TracePointContext) -> Result<u32, u32> {
+    let tsig:u64 = ctx.read_at(24).unwrap();
+    if tsig == 0 { return Ok(0); }
+    let tpid:i64 = ctx.read_at(16).unwrap();
     let pid:u32 = (bpf_get_current_pid_tgid() >> 32).try_into().unwrap();
     let tid:u32 = bpf_get_current_pid_tgid() as u32;
-    let tpid:i64 = ctx.read_at(16).unwrap();
-    let tsig:u64 = ctx.read_at(24).unwrap();
     let comm = bpf_get_current_comm().unwrap();
 
     let log_entry = SignalLog {

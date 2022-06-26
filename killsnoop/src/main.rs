@@ -7,9 +7,7 @@ use aya::{
 };
 use bytes::BytesMut;
 use chrono::Local;
-use std::{
-    convert::{TryFrom,TryInto},
-};
+use std::convert::{TryFrom, TryInto};
 use tokio::{signal, task};
 
 use killsnoop_common::SignalLog;

@@ -15,28 +15,21 @@ static mut EVENTS: PerfEventArray<SignalLog> = PerfEventArray::<SignalLog>::with
 
 #[tracepoint(name="killsnoop")]
 pub fn killsnoop(ctx: TracePointContext) -> u32 {
-    match unsafe {try_killsnoop(ctx)} {
+    match unsafe { try_killsnoop(ctx) } {
         Ok(ret) => ret,
         Err(ret) => ret,
     }
 }
 
 unsafe fn try_killsnoop(ctx: TracePointContext) -> Result<u32, u32> {
-    let tsig:u64 = ctx.read_at(24).unwrap();
+    let tsig = ctx.read_at::<u64>(24).unwrap() as u32;
     if tsig == 0 { return Ok(0); }
-    let tpid:i64 = ctx.read_at(16).unwrap();
-    let pid:u32 = (bpf_get_current_pid_tgid() >> 32).try_into().unwrap();
-    let tid:u32 = bpf_get_current_pid_tgid() as u32;
+    let tpid = ctx.read_at::<i64>(16).unwrap() as i32;
+    let pid = (bpf_get_current_pid_tgid() >> 32).try_into().unwrap();
+    let tid = bpf_get_current_pid_tgid() as u32;
     let comm = bpf_get_current_comm().unwrap();
 
-    let log_entry = SignalLog {
-        pid: pid,
-        tid: tid,
-        tpid: tpid as i32,
-        tsig: tsig as u32,
-        comm: comm,
-    };
-
+    let log_entry = SignalLog { pid, tid, tpid, tsig, comm };
     EVENTS.output(&ctx, &log_entry, 0);
 
     Ok(0)

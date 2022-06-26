@@ -1,15 +1,14 @@
 [package]
 name = "killsnoop"
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 publish = false
 
 [dependencies]
-aya = { git = "https://github.com/aya-rs/aya", branch="main", features=["async_tokio"] }
-killsnoop-common = { path = "../killsnoop-common", features=["userspace"] }
+aya = { version = ">=0.11", features=["async_tokio"] }
+killsnoop-common = { path = "../killsnoop-common", features=["user"] }
 anyhow = "1.0.42"
-ctrlc = "3.2"
-tokio = { version = "1.9.0", features = ["full"] }
+tokio = { version = "1.18", features = ["macros", "rt", "rt-multi-thread", "net", "signal"] }
 bytes = "1"
 chrono = "0.4"
 

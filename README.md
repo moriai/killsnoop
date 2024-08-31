@@ -2,8 +2,6 @@
 
 ## Prerequisites
 
-1. Install a rust stable toolchain: `rustup install stable`
-1. Install a rust nightly toolchain: `rustup install nightly`
 1. Install bpf-linker: `cargo install bpf-linker`
 
 ## Build eBPF
@@ -13,7 +11,7 @@ cargo xtask build-ebpf
 ```
 
 To perform a release build you can use the `--release` flag.
-You may also change the target architecture with the `--target` flag
+You may also change the target architecture with the `--target` flag.
 
 ## Build Userspace
 
@@ -21,8 +19,14 @@ You may also change the target architecture with the `--target` flag
 cargo build
 ```
 
+## Build eBPF and Userspace
+
+```bash
+cargo xtask build
+```
+
 ## Run
 
 ```bash
-cargo xtask run
+RUST_LOG=info cargo xtask run
 ```

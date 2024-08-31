@@ -5,10 +5,14 @@ edition = "2021"
 publish = false
 
 [dependencies]
-aya = { version = ">=0.11", features=["async_tokio"] }
-killsnoop-common = { path = "../killsnoop-common", features=["user"] }
-anyhow = "1.0.42"
-tokio = { version = "1.18", features = ["macros", "rt", "rt-multi-thread", "net", "signal"] }
+aya = { version = "0.12", features = ["async_tokio"] }
+aya-log = "0.2"
+killsnoop-common = { path = "../killsnoop-common", features = ["user"] }
+anyhow = "1"
+env_logger = "0.10"
+libc = "0.2"
+log = "0.4"
+tokio = { version = "1.25", features = ["macros", "rt", "rt-multi-thread", "net", "signal"] }
 bytes = "1"
 chrono = "0.4"
 

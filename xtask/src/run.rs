@@ -1,9 +1,9 @@
-use std::{os::unix::process::CommandExt, process::Command};
+use std::process::Command;
 
 use anyhow::Context as _;
 use clap::Parser;
 
-use crate::build_ebpf::{build_ebpf, Architecture, Options as BuildOptions};
+use crate::{build::{build, Options as BuildOptions}, build_ebpf::Architecture};
 
 #[derive(Debug, Parser)]
 pub struct Options {
@@ -21,33 +21,18 @@ pub struct Options {
     pub run_args: Vec<String>,
 }
 
-/// Build the project
-fn build(opts: &Options) -> Result<(), anyhow::Error> {
-    let mut args = vec!["build"];
-    if opts.release {
-        args.push("--release")
-    }
-    let status = Command::new("cargo")
-        .args(&args)
-        .status()
-        .expect("failed to build userspace");
-    assert!(status.success());
-    Ok(())
-}
 
 /// Build and run the project
 pub fn run(opts: Options) -> Result<(), anyhow::Error> {
-    // build our ebpf program followed by our application
-    build_ebpf(BuildOptions {
-        target: opts.bpf_target,
+    // Build our ebpf program and the project
+    build(BuildOptions{
+        bpf_target: opts.bpf_target,
         release: opts.release,
-    })
-    .context("Error while building eBPF program")?;
-    build(&opts).context("Error while building userspace application")?;
-
+    }).context("Error while building project")?;
+    
     // profile we are building (release or debug)
     let profile = if opts.release { "release" } else { "debug" };
-    let bin_path = format!("target/{}/killsnoop", profile);
+    let bin_path = format!("target/{profile}/killsnoop");
 
     // arguments to pass to the application
     let mut run_args: Vec<_> = opts.run_args.iter().map(String::as_str).collect();
@@ -57,11 +42,14 @@ pub fn run(opts: Options) -> Result<(), anyhow::Error> {
     args.push(bin_path.as_str());
     args.append(&mut run_args);
 
-    // spawn the command
-    let err = Command::new(args.get(0).expect("No first argument"))
+    // run the command
+    let status = Command::new(args.first().expect("No first argument"))
         .args(args.iter().skip(1))
-        .exec();
+        .status()
+        .expect("failed to run the command");
 
-    // we shouldn't get here unless the command failed to spawn
-    Err(anyhow::Error::from(err).context(format!("Failed to run `{}`", args.join(" "))))
+    if !status.success() {
+        anyhow::bail!("Failed to run `{}`", args.join(" "));
+    }
+    Ok(())
 }

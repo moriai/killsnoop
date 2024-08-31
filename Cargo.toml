@@ -1,2 +1,3 @@
 [workspace]
-members = ["killsnoop", "killsnoop-common", "xtask"]
+resolver = "2"
+members = ["xtask", "killsnoop", "killsnoop-common"]

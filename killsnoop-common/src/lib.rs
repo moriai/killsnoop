@@ -1,6 +1,6 @@
 #![no_std]
 
-use aya_bpf::cty::c_char;
+use aya_ebpf::cty::c_char;
 
 #[repr(C)]
 #[derive(Copy,Clone)]

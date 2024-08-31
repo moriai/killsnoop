@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use aya_bpf::{
+use aya_ebpf::{
     helpers::{bpf_get_current_pid_tgid, bpf_get_current_comm},
     macros::{tracepoint, map},
     maps::PerfEventArray,
@@ -13,7 +13,7 @@ use killsnoop_common::SignalLog;
 #[map(name = "EVENTS")]
 static mut EVENTS: PerfEventArray<SignalLog> = PerfEventArray::<SignalLog>::with_max_entries(1024, 0);
 
-#[tracepoint(name="killsnoop")]
+#[tracepoint]
 pub fn killsnoop(ctx: TracePointContext) -> u32 {
     match unsafe { try_killsnoop(ctx) } {
         Ok(ret) => ret,

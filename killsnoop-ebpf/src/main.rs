@@ -10,7 +10,7 @@ use aya_ebpf::{
 use core::convert::TryInto;
 use killsnoop_common::SignalLog;
 
-#[map(name = "EVENTS")]
+#[map]
 static mut EVENTS: PerfEventArray<SignalLog> = PerfEventArray::<SignalLog>::with_max_entries(1024, 0);
 
 #[tracepoint]
